@@ -93,20 +93,24 @@ router.post("/", upload.single("noImg"), async (req, res) => {
 
 router.put("/update/:id", upload.single("noImg"), async (req, res) => {
   const id = req.params.id;
-  await Notice.update(
-    {
-      noTitle: req.body.noTitle,
-      noText: req.body.noText,
-      noTag: req.body.noTag,
-      noImg: req.file.path,
-    },
-    {
-      where: {
-        id: id,
+  try {
+    await Notice.update(
+      {
+        noTitle: req.body.noTitle,
+        noText: req.body.noText,
+        noTag: req.body.noTag,
+        // noImg: req.file.path,
       },
-    }
-  );
-  res.json("UPDATE NOTICE POST");
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res.json("UPDATE NOTICE POST");
+  } catch (err) {
+    res.json("ERROR UPDATE");
+  }
 });
 
 module.exports = router;
