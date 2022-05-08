@@ -1,62 +1,52 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { Notice } = require('../models');
-const multer = require('multer');
-const fs = require('fs');
-const bodyParser = require('body-Parser');
+const { Notice } = require("../models");
+const multer = require("multer");
+const fs = require("fs");
+const bodyParser = require("body-Parser");
 
-router.use(bodyParser.json())
+router.use(bodyParser.json());
 
-
-router.get("/", async(req,res) => {
-    const listOfNotice = await Study.findAll()
-    res.json(listOfNotice);
+router.get("/", async (req, res) => {
+  const listOfNotice = await Notice.findAll();
+  res.json(listOfNotice);
 });
 
-router.get('/notices/:id', async(req,res) => {
-    const id = req.params.id;
-    const notice = await Notice.findByPk(id);
-    res.json(notice);
+router.get("/notices/:id", async (req, res) => {
+  const id = req.params.id;
+  const notice = await Notice.findByPk(id);
+  res.json(notice);
 });
 
-router.delete("/:noticeId", async(req,res) => {
-    const noticeId = req.params.noticecId;
+router.delete("/:noticeId", async (req, res) => {
+  const noticeId = req.params.noticeId;
+  try {
     await Notice.destroy({
-        where: {
-            id: noticeId,
-        },
+      where: {
+        id: noticeId,
+      },
     });
     res.json("DELETE NOTICE POST");
+  } catch (err) {
+    res.json("ERROR DELETE");
+  }
 });
 
-router.put("/update", async(req,res) => {
-    await Notice.update({
-        noTitle:req.body.noTitle,
-        noText:req.body.noText,
-        noImg:req.body.noImg,
-        noTag:req.body.noTag},{
-        where:{
-            id:req.body.id
-        }}
-    );
-    res.json("UPDATE NOTICE POST");
-});
-
-    try {
-        fs.readdirSync('uploads');
-    } catch (error) {
-        console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
-        fs.mkdirSync('uploads');
-    } 
+try {
+  fs.readdirSync("uploads");
+} catch (error) {
+  console.error("uploads 폴더가 없어 uploads 폴더를 생성합니다.");
+  fs.mkdirSync("uploads");
+}
 
 const randomstring = require("randomstring");
 
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/'); //저장할 폴더
+      cb(null, "uploads/"); //저장할 폴더
     },
-    filename: (req, file, cb) => {     
+    filename: (req, file, cb) => {
       var fileName = randomstring.generate(25);
       var mimeType;
       switch (
@@ -79,7 +69,7 @@ const upload = multer({
           break;
       }
       //count++;
-      cb(null, fileName+"." + mimeType); // 파일 이름 + 파일 타입 형태로 이름 설정
+      cb(null, fileName + "." + mimeType); // 파일 이름 + 파일 타입 형태로 이름 설정
     },
   }),
   limits: {
@@ -87,25 +77,36 @@ const upload = multer({
   },
 });
 
-
-router.post("/", upload.single("img"), async (req, res) => {
-  //const { user_id } = res.locals.user;
-    const { title,
-    studyText,
-    username,
-    studyDate } = req.body;
-    const img = req.file.path;
+router.post("/", upload.single("noImg"), async (req, res) => {
+  const { noTitle, noText, noTag } = req.body;
+  const noImg = req.file.path;
   //각종 예외처리 생략
-  
-    const all = await Study.create({
-        title,
-        studyText,
-        username,
-        studyDate,
-        img,
-    });
-    res.json(all);
-})
 
+  const all = await Notice.create({
+    noTitle,
+    noText,
+    noTag,
+    noImg,
+  });
+  res.json(all);
+});
 
-module.exports = router
+router.put("/update:updateId", upload.single("noImg"), async (req, res) => {
+  const updateId = req.params.id;
+  await Notice.update(
+    {
+      noTitle: req.body.noTitle,
+      noText: req.body.noText,
+      noTag: req.body.noTag,
+      noImg: req.file.path,
+    },
+    {
+      where: {
+        id: updateId,
+      },
+    }
+  );
+  res.json("UPDATE NOTICE POST");
+});
+
+module.exports = router;

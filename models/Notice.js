@@ -6,17 +6,17 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         noText: {
-            type: DataTypes.STRING(100000),
-            allowNull: false,
-        },
-        noImg: {
-            type: DataTypes.BLOB("long"),
+            type: DataTypes.STRING(10000),
             allowNull: false,
         },
         noTag:{
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        noImg:{
+            type: DataTypes.BLOB("long"),
+            allowNull: true,
+        }
     });
 
     return Notice;

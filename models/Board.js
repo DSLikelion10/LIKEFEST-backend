@@ -1,9 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
 
     const Board = sequelize.define("Board", {
-        
-        noText: {
-            type: DataTypes.STRING(100000),
+        boText: {
+            type: DataTypes.STRING(10000),
             allowNull: false,
         },
     });
