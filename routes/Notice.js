@@ -91,7 +91,8 @@ router.post("/", upload.single("noImg"), async (req, res) => {
   res.json(all);
 });
 
-router.put("/update", upload.single("noImg"), async (req, res) => {
+router.put("/update/:id", upload.single("noImg"), async (req, res) => {
+  const id = req.params.id;
   await Notice.update(
     {
       noTitle: req.body.noTitle,
@@ -101,7 +102,7 @@ router.put("/update", upload.single("noImg"), async (req, res) => {
     },
     {
       where: {
-        id: req.body.id,
+        id: id,
       },
     }
   );
